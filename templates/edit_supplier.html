@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+{% block title %}Edit Supplier{% endblock %}
+{% block content %}
+<div class="page-header"><h2>Edit Supplier</h2></div>
+<div class="card"><div class="card-body">
+<form method="POST">
+<div class="row">
+<div class="col-md-6 mb-3"><label>Name *</label><input type="text" class="form-control" name="name" value="{{ supplier['name'] }}" required></div>
+<div class="col-md-6 mb-3"><label>Company</label><input type="text" class="form-control" name="company" value="{{ supplier['company'] or '' }}"></div>
+</div>
+<div class="row">
+<div class="col-md-6 mb-3"><label>Email</label><input type="email" class="form-control" name="email" value="{{ supplier['email'] or '' }}"></div>
+<div class="col-md-6 mb-3"><label>Phone</label><input type="text" class="form-control" name="phone" value="{{ supplier['phone'] or '' }}"></div>
+</div>
+<div class="row">
+<div class="col-md-8 mb-3"><label>Address</label><input type="text" class="form-control" name="address" value="{{ supplier['address'] or '' }}"></div>
+<div class="col-md-4 mb-3"><label>Category</label><input type="text" class="form-control" name="category" value="{{ supplier['category'] or '' }}"></div>
+</div>
+<div class="row">
+<div class="col-md-6 mb-3"><label>Rating</label><select class="form-select" name="rating">
+<option value="">No Rating</option>
+<option value="1" {% if supplier['rating']==1 %}selected{% endif %}>1 Star</option>
+<option value="2" {% if supplier['rating']==2 %}selected{% endif %}>2 Stars</option>
+<option value="3" {% if supplier['rating']==3 %}selected{% endif %}>3 Stars</option>
+<option value="4" {% if supplier['rating']==4 %}selected{% endif %}>4 Stars</option>
+<option value="5" {% if supplier['rating']==5 %}selected{% endif %}>5 Stars</option>
+</select></div>
+</div>
+<div class="mb-3"><label>Notes</label><textarea class="form-control" name="notes" rows="3">{{ supplier['notes'] or '' }}</textarea></div>
+<button type="submit" class="btn btn-primary">Update Supplier</button>
+<a href="{{ url_for('suppliers') }}" class="btn btn-secondary">Cancel</a>
+</form>
+</div></div>
+{% endblock %}

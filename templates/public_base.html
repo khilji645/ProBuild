@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}ProBuild Engineering{% endblock %}</title>
+    <link rel="icon" type="image/png" href="{{ url_for('static', filename='logo.png') }}" onerror="this.remove()">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-color: #2c3e50;
+            --secondary-color: #3498db;
+            --success-color: #27ae60;
+            --warning-color: #f39c12;
+        }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; color: #2c3e50; }
+        .public-navbar {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .public-navbar .nav-link { color: rgba(255,255,255,0.9); font-weight: 500; }
+        .public-navbar .nav-link.active, .public-navbar .nav-link:hover { color: #fff; }
+        .public-navbar .btn-login {
+            background: #fff; color: var(--primary-color); font-weight: 600;
+            padding: 8px 20px; border-radius: 6px;
+        }
+        .hero {
+            background: linear-gradient(135deg, rgba(44,62,80,0.92), rgba(52,152,219,0.88)),
+                        url('https://images.unsplash.com/photo-1541888946425-d81bb19240f5?auto=format&fit=crop&w=1600&q=60') center/cover;
+            color: #fff; padding: 100px 0 90px;
+        }
+        .section { padding: 70px 0; }
+        .section-title { font-weight: 700; color: var(--primary-color); margin-bottom: 10px; }
+        .section-subtitle { color: #6c757d; margin-bottom: 40px; }
+        .card-feature {
+            border: none; border-radius: 12px; box-shadow: 0 4px 16px rgba(0,0,0,0.06);
+            padding: 30px; height: 100%; transition: transform .25s;
+        }
+        .card-feature:hover { transform: translateY(-6px); }
+        .card-feature i { font-size: 2.2rem; color: var(--secondary-color); margin-bottom: 15px; }
+        .stat-box h2 { font-weight: 700; color: var(--secondary-color); }
+        .project-card { border: none; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 16px rgba(0,0,0,0.08); }
+        .project-card img { height: 200px; object-fit: cover; width: 100%; }
+        .public-footer { background: var(--primary-color); color: #ecf0f1; padding: 40px 0 20px; margin-top: 40px; }
+        .public-footer a { color: #bdc3c7; }
+        .public-footer a:hover { color: #fff; }
+        .btn-primary { background-color: var(--secondary-color); border-color: var(--secondary-color); }
+        .btn-primary:hover { background-color: #2980b9; border-color: #2980b9; }
+    </style>
+    {% block extra_css %}{% endblock %}
+</head>
+<body>
+<nav class="navbar navbar-expand-lg public-navbar navbar-dark sticky-top">
+    <div class="container">
+        <a class="navbar-brand fw-bold" href="{{ url_for('index') }}">
+            <i class="fas fa-hard-hat"></i> ProBuild Engineering
+        </a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#publicNav">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="publicNav">
+            <ul class="navbar-nav ms-auto align-items-lg-center">
+                <li class="nav-item"><a class="nav-link {% if request.endpoint=='index' %}active{% endif %}" href="{{ url_for('index') }}">Home</a></li>
+                <li class="nav-item"><a class="nav-link {% if request.endpoint=='about' %}active{% endif %}" href="{{ url_for('about') }}">About</a></li>
+                <li class="nav-item"><a class="nav-link {% if request.endpoint=='services' %}active{% endif %}" href="{{ url_for('services') }}">Services</a></li>
+                <li class="nav-item"><a class="nav-link {% if request.endpoint=='portfolio' %}active{% endif %}" href="{{ url_for('portfolio') }}">Portfolio</a></li>
+                <li class="nav-item"><a class="nav-link {% if request.endpoint=='contact' %}active{% endif %}" href="{{ url_for('contact') }}">Contact</a></li>
+                <li class="nav-item ms-lg-3 mt-2 mt-lg-0">
+                    {% if current_user.is_authenticated %}
+                    <a href="{{ url_for('dashboard') }}" class="btn btn-login"><i class="fas fa-tachometer-alt"></i> Dashboard</a>
+                    {% else %}
+                    <a href="{{ url_for('login') }}" class="btn btn-login"><i class="fas fa-lock"></i> Staff Login</a>
+                    {% endif %}
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>
+
+{% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+    <div class="container mt-3">
+        {% for category, message in messages %}
+        <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+            {{ message }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+{% endwith %}
+
+{% block content %}{% endblock %}
+
+<footer class="public-footer">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-4 mb-3">
+                <h5><i class="fas fa-hard-hat"></i> ProBuild Engineering</h5>
+                <p class="small">Building quality infrastructure with reliability and precision, project after project.</p>
+            </div>
+            <div class="col-md-4 mb-3">
+                <h6>Quick Links</h6>
+                <p class="mb-1"><a href="{{ url_for('about') }}">About Us</a></p>
+                <p class="mb-1"><a href="{{ url_for('services') }}">Services</a></p>
+                <p class="mb-1"><a href="{{ url_for('portfolio') }}">Portfolio</a></p>
+                <p class="mb-1"><a href="{{ url_for('contact') }}">Contact</a></p>
+            </div>
+            <div class="col-md-4 mb-3">
+                <h6>Get In Touch</h6>
+                <p class="small mb-1"><i class="fas fa-envelope"></i> info@probuild.com</p>
+                <p class="small mb-1"><i class="fas fa-phone"></i> +92 300 0000000</p>
+                <p class="small"><i class="fas fa-map-marker-alt"></i> Islamabad, Pakistan</p>
+            </div>
+        </div>
+        <hr class="border-secondary">
+        <p class="small text-center mb-0">&copy; {{ current_year_value }} ProBuild Engineering. All rights reserved.</p>
+    </div>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+{% block extra_js %}{% endblock %}
+</body>
+</html>

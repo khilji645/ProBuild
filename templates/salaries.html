@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+{% block title %}Salaries{% endblock %}
+{% block content %}
+<div class="page-header d-flex justify-content-between">
+<div><h2><i class="fas fa-money-bill-wave"></i> Salaries</h2></div>
+<a href="{{ url_for('add_salary') }}" class="btn btn-primary">Add Salary Payment</a>
+</div>
+<div class="card"><div class="card-body">
+{% if salaries %}
+<table class="table table-hover">
+<thead><tr><th>Employee</th><th>Month/Year</th><th>Amount</th><th>Bonus</th><th>Deductions</th><th>Net Amount</th><th>Payment Date</th><th>Actions</th></tr></thead>
+<tbody>
+{% for salary in salaries %}
+<tr>
+<td>{{ salary.employee.name if salary.employee else 'N/A' }}</td>
+<td>{{ salary['month'] }}/{{ salary['year'] }}</td>
+<td>PKR {{ "%.2f"|format(salary['amount']) }}</td>
+<td>PKR {{ "%.2f"|format(salary['bonus']) }}</td>
+<td>PKR {{ "%.2f"|format(salary['deductions']) }}</td>
+<td><strong>PKR {{ "%.2f"|format(salary['net_amount']) }}</strong></td>
+<td>{{ salary['payment_date'] }}</td>
+<td><a href="{{ url_for('delete_salary', id=salary['id']) }}" class="btn btn-sm btn-danger" onclick="return confirm('Delete?')"><i class="fas fa-trash"></i></a></td>
+</tr>
+{% endfor %}
+</tbody>
+</table>
+{% else %}<p class="text-center py-4">No salary records found.</p>{% endif %}
+</div></div>
+{% endblock %}

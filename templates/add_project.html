@@ -1,0 +1,104 @@
+{% extends "base.html" %}
+{% block title %}Add Project - ProBuild{% endblock %}
+{% block content %}
+<div class="page-header">
+    <h2><i class="fas fa-plus-circle"></i> Add New Project</h2>
+</div>
+<div class="card">
+    <div class="card-body">
+        <form method="POST">
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label class="form-label">Project Name *</label>
+                    <input type="text" class="form-control" name="name" required>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label class="form-label">Client *</label>
+                    <select class="form-select" name="client_id" required>
+                        <option value="">Select Client</option>
+                        {% for client in clients %}
+                        <option value="{{ client['id'] }}">{{ client['name'] }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Description</label>
+                <textarea class="form-control" name="description" rows="3"></textarea>
+            </div>
+            <div class="row">
+                <div class="col-md-3 mb-3">
+                    <label class="form-label">Status</label>
+                    <select class="form-select" name="status">
+                        <option value="Planning">Planning</option>
+                        <option value="In Progress">In Progress</option>
+                        <option value="On Hold">On Hold</option>
+                        <option value="Completed">Completed</option>
+                    </select>
+                </div>
+                <div class="col-md-3 mb-3">
+                    <label class="form-label">Priority</label>
+                    <select class="form-select" name="priority">
+                        <option value="Low">Low</option>
+                        <option value="Medium" selected>Medium</option>
+                        <option value="High">High</option>
+                        <option value="Critical">Critical</option>
+                    </select>
+                </div>
+                <div class="col-md-3 mb-3">
+                    <label class="form-label">Budget</label>
+                    <input type="number" class="form-control" name="budget" step="0.01" value="0">
+                </div>
+                <div class="col-md-3 mb-3">
+                    <label class="form-label">Completion %</label>
+                    <input type="number" class="form-control" name="completion_percentage" min="0" max="100" value="0">
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label class="form-label">Start Date</label>
+                    <input type="date" class="form-control" name="start_date">
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label class="form-label">End Date</label>
+                    <input type="date" class="form-control" name="end_date">
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label class="form-label">Location</label>
+                    <input type="text" class="form-control" name="location">
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label class="form-label">Project Manager</label>
+                    <input type="text" class="form-control" name="project_manager">
+                </div>
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Notes</label>
+                <textarea class="form-control" name="notes" rows="3"></textarea>
+            </div>
+            <div class="card bg-light mb-3">
+                <div class="card-body">
+                    <h6 class="mb-3"><i class="fas fa-globe"></i> Public Website</h6>
+                    <div class="row">
+                        <div class="col-md-8 mb-2">
+                            <label class="form-label">Cover Image URL</label>
+                            <input type="text" class="form-control" name="cover_image" placeholder="https://... (shown on the public portfolio page)">
+                        </div>
+                        <div class="col-md-4 mb-2 d-flex align-items-end">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" name="is_public" id="is_public">
+                                <label class="form-check-label" for="is_public">Show on public portfolio</label>
+                            </div>
+                        </div>
+                    </div>
+                    <small class="text-muted">Budget and client details are never shown publicly, regardless of this setting.</small>
+                </div>
+            </div>
+            <button type="submit" class="btn btn-primary"><i class="fas fa-save"></i> Save Project</button>
+            <a href="{{ url_for('projects') }}" class="btn btn-secondary">Cancel</a>
+        </form>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% block title %}Edit Employee{% endblock %}
+{% block content %}
+<div class="page-header"><h2>Edit Employee</h2></div>
+<div class="card"><div class="card-body">
+<form method="POST">
+<div class="row">
+<div class="col-md-6 mb-3"><label>Name *</label><input type="text" class="form-control" name="name" value="{{ employee['name'] }}" required></div>
+<div class="col-md-6 mb-3"><label>Employee ID</label><input type="text" class="form-control" name="employee_id" value="{{ employee['employee_id'] or '' }}"></div>
+</div>
+<div class="row">
+<div class="col-md-6 mb-3"><label>Position</label><input type="text" class="form-control" name="position" value="{{ employee['position'] or '' }}"></div>
+<div class="col-md-6 mb-3"><label>Department</label><input type="text" class="form-control" name="department" value="{{ employee['department'] or '' }}"></div>
+</div>
+<div class="row">
+<div class="col-md-6 mb-3"><label>Email</label><input type="email" class="form-control" name="email" value="{{ employee['email'] or '' }}"></div>
+<div class="col-md-6 mb-3"><label>Phone</label><input type="text" class="form-control" name="phone" value="{{ employee['phone'] or '' }}"></div>
+</div>
+<div class="row">
+<div class="col-md-4 mb-3"><label>Hire Date</label><input type="date" class="form-control" name="hire_date" value="{{ employee['hire_date'] or '' }}"></div>
+<div class="col-md-4 mb-3"><label>Salary</label><input type="number" class="form-control" name="salary" step="0.01" value="{{ employee['salary'] }}"></div>
+<div class="col-md-4 mb-3"><label>Status</label><select class="form-select" name="status">
+<option value="Active" {% if employee['status']=='Active' %}selected{% endif %}>Active</option>
+<option value="Inactive" {% if employee['status']=='Inactive' %}selected{% endif %}>Inactive</option>
+</select></div>
+</div>
+<div class="mb-3"><label>Address</label><textarea class="form-control" name="address" rows="2">{{ employee['address'] or '' }}</textarea></div>
+<button type="submit" class="btn btn-primary">Update Employee</button>
+<a href="{{ url_for('employees') }}" class="btn btn-secondary">Cancel</a>
+</form>
+</div></div>
+{% endblock %}

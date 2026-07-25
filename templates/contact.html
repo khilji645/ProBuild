@@ -1,0 +1,55 @@
+{% extends "public_base.html" %}
+{% block title %}Contact Us | ProBuild Engineering{% endblock %}
+{% block content %}
+<section class="section">
+    <div class="container">
+        <h2 class="section-title text-center">Get In Touch</h2>
+        <p class="section-subtitle text-center">Tell us about your project and we'll get back to you shortly.</p>
+
+        <div class="row g-5">
+            <div class="col-md-5">
+                <h5 class="mb-3">Contact Information</h5>
+                <p class="mb-3"><i class="fas fa-map-marker-alt text-primary me-2"></i> {{ get_content('contact_address', 'Islamabad, Pakistan') }}</p>
+                <p class="mb-3"><i class="fas fa-phone text-primary me-2"></i> {{ get_content('contact_phone', '+92 300 0000000') }}</p>
+                <p class="mb-3"><i class="fas fa-envelope text-primary me-2"></i> {{ get_content('contact_email', 'info@probuild.com') }}</p>
+                <p class="mb-3"><i class="fas fa-clock text-primary me-2"></i> {{ get_content('contact_hours', 'Mon - Sat, 9:00 AM - 6:00 PM') }}</p>
+            </div>
+            <div class="col-md-7">
+                <div class="card-feature">
+                    <form method="POST">
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Name *</label>
+                                <input type="text" class="form-control" name="name" required>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Email *</label>
+                                <input type="email" class="form-control" name="email" required>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Phone</label>
+                                <input type="text" class="form-control" name="phone">
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Company</label>
+                                <input type="text" class="form-control" name="company">
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Subject</label>
+                            <input type="text" class="form-control" name="subject" placeholder="e.g., New project inquiry">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Message *</label>
+                            <textarea class="form-control" name="message" rows="4" required></textarea>
+                        </div>
+                        <button type="submit" class="btn btn-primary"><i class="fas fa-paper-plane"></i> Send Message</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

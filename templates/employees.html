@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+{% block title %}Employees{% endblock %}
+{% block content %}
+<div class="page-header d-flex justify-content-between">
+<div><h2><i class="fas fa-user-tie"></i> Employees</h2></div>
+{% if current_user.role != 'viewer' %}
+<a href="{{ url_for('add_employee') }}" class="btn btn-primary">Add Employee</a>
+{% endif %}
+</div>
+<div class="card"><div class="card-body">
+{% if employees %}
+<table class="table table-hover">
+<thead><tr><th>Name</th><th>ID</th><th>Position</th><th>Department</th><th>Salary</th><th>Status</th>{% if current_user.role != 'viewer' %}<th>Actions</th>{% endif %}</tr></thead>
+<tbody>
+{% for emp in employees %}
+<tr>
+<td>{{ emp['name'] }}</td>
+<td>{{ emp['employee_id'] or 'N/A' }}</td>
+<td>{{ emp['position'] or 'N/A' }}</td>
+<td>{{ emp['department'] or 'N/A' }}</td>
+<td>PKR {{ "%.2f"|format(emp['salary']) }}</td>
+<td><span class="badge bg-{{ 'success' if emp['status']=='Active' else 'secondary' }}">{{ emp['status'] }}</span></td>
+{% if current_user.role != 'viewer' %}
+<td>
+<a href="{{ url_for('edit_employee', id=emp['id']) }}" class="btn btn-sm btn-warning"><i class="fas fa-edit"></i></a>
+{% if current_user.role in ['admin', 'manager'] %}
+<a href="{{ url_for('delete_employee', id=emp['id']) }}" class="btn btn-sm btn-danger" onclick="return confirm('Delete?')"><i class="fas fa-trash"></i></a>
+{% endif %}
+</td>
+{% endif %}
+</tr>
+{% endfor %}
+</tbody>
+</table>
+{% else %}<p class="text-center py-4">No employees found.</p>{% endif %}
+</div></div>
+{% endblock %}

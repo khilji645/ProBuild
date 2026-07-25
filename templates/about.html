@@ -1,0 +1,46 @@
+{% extends "public_base.html" %}
+{% block title %}About Us | ProBuild Engineering{% endblock %}
+{% block content %}
+<section class="section">
+    <div class="container">
+        <h2 class="section-title text-center">{{ get_content('about_title', 'About ProBuild Engineering') }}</h2>
+        <p class="section-subtitle text-center">{{ get_content('about_subtitle', 'A construction and engineering firm built on reliability, precision, and long-term client relationships.') }}</p>
+
+        <div class="row align-items-center g-5 mt-3">
+            <div class="col-md-6">
+                <img src="{{ get_content('about_image_url', 'https://images.unsplash.com/photo-1503387762-592deb58ef4e?auto=format&fit=crop&w=900&q=60') }}" class="img-fluid rounded shadow" alt="Construction team">
+            </div>
+            <div class="col-md-6">
+                <h4>Our Story</h4>
+                <p class="text-muted">{{ get_content('about_story', 'ProBuild Engineering was founded to bring dependable project management and honest craftsmanship to construction work — from residential builds to large infrastructure contracts. We manage every stage of a project ourselves: planning, procurement, on-site execution, and handover.') }}</p>
+                <h4 class="mt-4">Our Mission</h4>
+                <p class="text-muted">{{ get_content('about_mission', 'To deliver every project on time, on budget, and to a standard our clients are proud of.') }}</p>
+            </div>
+        </div>
+
+        <div class="row g-4 mt-5">
+            <div class="col-md-4">
+                <div class="card-feature text-center">
+                    <i class="fas fa-bullseye"></i>
+                    <h5>Precision</h5>
+                    <p class="text-muted small mb-0">Detailed planning and careful execution on every job, large or small.</p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card-feature text-center">
+                    <i class="fas fa-handshake"></i>
+                    <h5>Integrity</h5>
+                    <p class="text-muted small mb-0">Transparent communication and honest timelines with every client.</p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card-feature text-center">
+                    <i class="fas fa-shield-alt"></i>
+                    <h5>Safety</h5>
+                    <p class="text-muted small mb-0">Rigorous safety standards on every site we manage.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

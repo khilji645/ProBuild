@@ -1,0 +1,223 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard - ProBuild Engineering{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h2><i class="fas fa-tachometer-alt"></i> Dashboard</h2>
+    <p class="text-muted">Welcome back, {{ current_user['username'] }}! Here's your project overview.</p>
+</div>
+
+<!-- Statistics Cards -->
+<div class="row">
+    <div class="col-md-3">
+        <div class="card stats-card bg-primary text-white">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h6 class="text-uppercase mb-1">Total Projects</h6>
+                        <h2 class="mb-0">{{ total_projects }}</h2>
+                    </div>
+                    <div>
+                        <i class="fas fa-project-diagram fa-3x opacity-50"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-3">
+        <div class="card stats-card bg-success text-white">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h6 class="text-uppercase mb-1">Active Projects</h6>
+                        <h2 class="mb-0">{{ active_projects }}</h2>
+                    </div>
+                    <div>
+                        <i class="fas fa-tasks fa-3x opacity-50"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-3">
+        <div class="card stats-card bg-info text-white">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h6 class="text-uppercase mb-1">Total Clients</h6>
+                        <h2 class="mb-0">{{ total_clients }}</h2>
+                    </div>
+                    <div>
+                        <i class="fas fa-users fa-3x opacity-50"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-3">
+        <div class="card stats-card bg-warning text-white">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h6 class="text-uppercase mb-1">Employees</h6>
+                        <h2 class="mb-0">{{ total_employees }}</h2>
+                    </div>
+                    <div>
+                        <i class="fas fa-user-tie fa-3x opacity-50"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Financial Overview -->
+<div class="row mt-4">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <i class="fas fa-money-bill-wave"></i> Monthly Expenses
+            </div>
+            <div class="card-body">
+                <h3 class="text-danger">PKR {{ "%.2f"|format(monthly_expenses) }}</h3>
+                <p class="text-muted mb-0">Total expenses this month</p>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <i class="fas fa-wallet"></i> Monthly Salaries
+            </div>
+            <div class="card-body">
+                <h3 class="text-primary">PKR {{ "%.2f"|format(monthly_salaries) }}</h3>
+                <p class="text-muted mb-0">Total salaries paid this month</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Recent Projects -->
+<div class="row mt-4">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <span><i class="fas fa-project-diagram"></i> Recent Projects</span>
+                <a href="{{ url_for('projects') }}" class="btn btn-sm btn-primary">View All</a>
+            </div>
+            <div class="card-body">
+                {% if recent_projects %}
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>Project</th>
+                                <th>Client</th>
+                                <th>Status</th>
+                                <th>Progress</th>
+                                <th>Budget</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for project in recent_projects %}
+                            <tr>
+                                <td>
+                                    <a href="{{ url_for('project_detail', id=project['id']) }}">
+                                        {{ project['name'] }}
+                                    </a>
+                                </td>
+                                <td>{{ project['client_name'] }}</td>
+                                <td>
+                                    {% if project['status'] == 'In Progress' %}
+                                        <span class="badge bg-success">{{ project['status'] }}</span>
+                                    {% elif project['status'] == 'Planning' %}
+                                        <span class="badge bg-info">{{ project['status'] }}</span>
+                                    {% elif project['status'] == 'On Hold' %}
+                                        <span class="badge bg-warning">{{ project['status'] }}</span>
+                                    {% else %}
+                                        <span class="badge bg-secondary">{{ project['status'] }}</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    <div class="progress" style="height: 20px;">
+                                        <div class="progress-bar" role="progressbar" style="width: {{ project['completion_percentage'] }}%">
+                                            {{ project['completion_percentage'] }}%
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>PKR {{ "%.2f"|format(project['budget']) }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <p class="text-muted text-center py-4">No recent projects found.</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-header">
+                <i class="fas fa-calendar-check"></i> Upcoming Tasks
+            </div>
+            <div class="card-body">
+                {% if upcoming_tasks %}
+                <div class="list-group list-group-flush">
+                    {% for task in upcoming_tasks %}
+                    <div class="list-group-item px-0">
+                        <div class="d-flex justify-content-between align-items-start">
+                            <div>
+                                <h6 class="mb-1">{{ task['title'] }}</h6>
+                                <small class="text-muted">{{ task['project_name'] }}</small>
+                            </div>
+                            <span class="badge bg-{{ 'danger' if task['priority'] == 'High' else 'warning' if task['priority'] == 'Medium' else 'info' }}">
+                                {{ task['priority'] }}
+                            </span>
+                        </div>
+                        <small class="text-muted">
+                            <i class="fas fa-calendar"></i> Due: {{ task['due_date'] }}
+                        </small>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% else %}
+                <p class="text-muted text-center py-4">No upcoming tasks.</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Project Status Distribution -->
+<div class="row mt-4">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-header">
+                <i class="fas fa-chart-pie"></i> Project Status Distribution
+            </div>
+            <div class="card-body">
+                {% if project_statuses %}
+                <div class="row">
+                    {% for status in project_statuses %}
+                    <div class="col-md-3 text-center">
+                        <h4>{{ status['count'] }}</h4>
+                        <p class="text-muted">{{ status['status'] }}</p>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% else %}
+                <p class="text-muted text-center">No project data available.</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+{% block title %}Add Equipment{% endblock %}
+{% block content %}
+<div class="page-header"><h2>Add Equipment</h2></div>
+<div class="card"><div class="card-body">
+<form method="POST">
+<div class="row">
+<div class="col-md-6 mb-3"><label>Name *</label><input type="text" class="form-control" name="name" required></div>
+<div class="col-md-6 mb-3"><label>Equipment ID</label><input type="text" class="form-control" name="equipment_id"></div>
+</div>
+<div class="row">
+<div class="col-md-4 mb-3"><label>Category</label><input type="text" class="form-control" name="category" placeholder="e.g., Heavy Machinery"></div>
+<div class="col-md-4 mb-3"><label>Status</label><select class="form-select" name="status">
+<option value="Available">Available</option><option value="In Use">In Use</option><option value="Maintenance">Maintenance</option><option value="Damaged">Damaged</option>
+</select></div>
+<div class="col-md-4 mb-3"><label>Location</label><input type="text" class="form-control" name="location"></div>
+</div>
+<div class="row">
+<div class="col-md-4 mb-3"><label>Purchase Date</label><input type="date" class="form-control" name="purchase_date"></div>
+<div class="col-md-4 mb-3"><label>Purchase Cost</label><input type="number" class="form-control" name="purchase_cost" step="0.01"></div>
+<div class="col-md-4 mb-3"><label>Current Value</label><input type="number" class="form-control" name="current_value" step="0.01"></div>
+</div>
+<div class="mb-3"><label>Notes</label><textarea class="form-control" name="notes" rows="2"></textarea></div>
+<button type="submit" class="btn btn-primary">Save Equipment</button>
+<a href="{{ url_for('equipment') }}" class="btn btn-secondary">Cancel</a>
+</form>
+</div></div>
+{% endblock %}

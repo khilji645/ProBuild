@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+{% block title %}Leads{% endblock %}
+{% block content %}
+<div class="page-header d-flex justify-content-between align-items-center">
+    <div><h2><i class="fas fa-inbox"></i> Website Leads</h2><p class="text-muted">Inquiries submitted through the public contact form</p></div>
+</div>
+
+<div class="mb-3">
+    <a href="{{ url_for('leads', status='all') }}" class="btn btn-sm {{ 'btn-primary' if status_filter=='all' else 'btn-outline-primary' }}">All</a>
+    <a href="{{ url_for('leads', status='New') }}" class="btn btn-sm {{ 'btn-primary' if status_filter=='New' else 'btn-outline-primary' }}">New</a>
+    <a href="{{ url_for('leads', status='Contacted') }}" class="btn btn-sm {{ 'btn-primary' if status_filter=='Contacted' else 'btn-outline-primary' }}">Contacted</a>
+    <a href="{{ url_for('leads', status='Closed') }}" class="btn btn-sm {{ 'btn-primary' if status_filter=='Closed' else 'btn-outline-primary' }}">Closed</a>
+</div>
+
+<div class="card"><div class="card-body">
+{% if leads %}
+<div class="table-responsive">
+<table class="table table-hover">
+<thead><tr><th>Date</th><th>Name</th><th>Contact</th><th>Subject</th><th>Message</th><th>Status</th><th>Actions</th></tr></thead>
+<tbody>
+{% for lead in leads %}
+<tr>
+<td>{{ lead.created_at.strftime('%b %d, %Y') }}</td>
+<td><strong>{{ lead.name }}</strong>{% if lead.company %}<br><small class="text-muted">{{ lead.company }}</small>{% endif %}</td>
+<td><a href="mailto:{{ lead.email }}">{{ lead.email }}</a>{% if lead.phone %}<br><small class="text-muted">{{ lead.phone }}</small>{% endif %}</td>
+<td>{{ lead.subject or 'N/A' }}</td>
+<td style="max-width:280px;">{{ lead.message[:100] }}{% if lead.message|length > 100 %}...{% endif %}</td>
+<td><span class="badge bg-{{ 'warning' if lead.status=='New' else 'info' if lead.status=='Contacted' else 'secondary' }}">{{ lead.status }}</span></td>
+<td>
+<form method="POST" action="{{ url_for('update_lead_status', id=lead.id) }}" class="d-inline">
+<select name="status" class="form-select form-select-sm d-inline w-auto" onchange="this.form.submit()">
+<option value="New" {% if lead.status=='New' %}selected{% endif %}>New</option>
+<option value="Contacted" {% if lead.status=='Contacted' %}selected{% endif %}>Contacted</option>
+<option value="Closed" {% if lead.status=='Closed' %}selected{% endif %}>Closed</option>
+</select>
+</form>
+<a href="{{ url_for('delete_lead', id=lead.id) }}" class="btn btn-sm btn-danger" onclick="return confirm('Delete this lead?')"><i class="fas fa-trash"></i></a>
+</td>
+</tr>
+{% endfor %}
+</tbody>
+</table>
+</div>
+{% else %}
+<p class="text-center py-4">No leads yet.</p>
+{% endif %}
+</div></div>
+{% endblock %}

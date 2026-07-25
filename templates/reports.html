@@ -1,0 +1,508 @@
+{% extends "base.html" %}
+
+{% block title %}Reports & Analytics - ProBuild Engineering{% endblock %}
+
+{% block extra_css %}
+<style>
+    .report-card {
+        border-left: 4px solid var(--primary-color);
+        transition: all 0.3s;
+    }
+    
+    .report-card:hover {
+        box-shadow: 0 5px 15px rgba(0,0,0,0.15);
+        transform: translateY(-2px);
+    }
+    
+    .stat-value {
+        font-size: 2rem;
+        font-weight: bold;
+        color: var(--primary-color);
+    }
+    
+    .stat-label {
+        color: #6c757d;
+        font-size: 0.9rem;
+        text-transform: uppercase;
+    }
+    
+    .chart-container {
+        position: relative;
+        height: 400px;
+        margin: 20px 0;
+    }
+    
+    .table-responsive {
+        max-height: 500px;
+        overflow-y: auto;
+    }
+    
+    .category-badge {
+        padding: 8px 15px;
+        border-radius: 20px;
+        font-weight: 500;
+    }
+    
+    .profit-positive {
+        color: #27ae60;
+        font-weight: bold;
+    }
+    
+    .profit-negative {
+        color: #e74c3c;
+        font-weight: bold;
+    }
+    
+    .export-btn {
+        margin-left: 10px;
+    }
+    
+    @media print {
+        .no-print {
+            display: none !important;
+        }
+        
+        .card {
+            page-break-inside: avoid;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="page-header d-flex justify-content-between align-items-center no-print">
+    <div>
+        <h2><i class="fas fa-chart-bar"></i> Reports & Analytics</h2>
+        <p class="text-muted">Comprehensive financial and project reports</p>
+    </div>
+    <div>
+        <button onclick="window.print()" class="btn btn-secondary">
+            <i class="fas fa-print"></i> Print Report
+        </button>
+        <button onclick="exportToExcel()" class="btn btn-success export-btn">
+            <i class="fas fa-file-excel"></i> Export to Excel
+        </button>
+        <button onclick="exportToPDF()" class="btn btn-danger export-btn">
+            <i class="fas fa-file-pdf"></i> Export to PDF
+        </button>
+    </div>
+</div>
+
+<!-- Financial Overview Cards -->
+<div class="row mb-4">
+    <div class="col-md-3">
+        <div class="card report-card">
+            <div class="card-body text-center">
+                <div class="stat-value text-primary">PKR {{ "{:,.2f}".format(total_project_budgets) }}</div>
+                <div class="stat-label">Total Project Budgets</div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card report-card">
+            <div class="card-body text-center">
+                <div class="stat-value text-danger">PKR {{ "{:,.2f}".format(total_expenses) }}</div>
+                <div class="stat-label">Total Expenses</div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card report-card">
+            <div class="card-body text-center">
+                {% set profit = total_project_budgets - total_expenses %}
+                <div class="stat-value {% if profit >= 0 %}text-success{% else %}text-danger{% endif %}">
+                    PKR {{ "{:,.2f}".format(profit) }}
+                </div>
+                <div class="stat-label">Net Profit/Loss</div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card report-card">
+            <div class="card-body text-center">
+                {% if total_project_budgets > 0 %}
+                    {% set margin = ((total_project_budgets - total_expenses) / total_project_budgets * 100) %}
+                {% else %}
+                    {% set margin = 0 %}
+                {% endif %}
+                <div class="stat-value {% if margin >= 0 %}text-success{% else %}text-danger{% endif %}">
+                    {{ "{:.1f}".format(margin) }}%
+                </div>
+                <div class="stat-label">Profit Margin</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Monthly Financial Breakdown -->
+<div class="card mb-4">
+    <div class="card-header d-flex justify-content-between align-items-center">
+        <h5 class="mb-0"><i class="fas fa-calendar-alt"></i> Monthly Financial Overview</h5>
+        <div class="btn-group no-print" role="group">
+            <button type="button" class="btn btn-sm btn-outline-primary" onclick="showChart('bar')">Bar Chart</button>
+            <button type="button" class="btn btn-sm btn-outline-primary" onclick="showChart('line')">Line Chart</button>
+            <button type="button" class="btn btn-sm btn-outline-primary" onclick="showChart('table')">Table View</button>
+        </div>
+    </div>
+    <div class="card-body">
+        <!-- Chart Canvas -->
+        <div id="chartView" class="chart-container">
+            <canvas id="monthlyChart"></canvas>
+        </div>
+        
+        <!-- Table View -->
+        <div id="tableView" style="display: none;">
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead class="table-dark">
+                        <tr>
+                            <th>Month</th>
+                            <th class="text-end">Expenses</th>
+                            <th class="text-end">Salaries</th>
+                            <th class="text-end">Total</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for data in monthly_data %}
+                        <tr>
+                            <td>{{ data.month }}</td>
+                            <td class="text-end">PKR {{ "{:,.2f}".format(data.expenses) }}</td>
+                            <td class="text-end">PKR {{ "{:,.2f}".format(data.salaries) }}</td>
+                            <td class="text-end"><strong>PKR {{ "{:,.2f}".format(data.total) }}</strong></td>
+                        </tr>
+                        {% endfor %}
+                        <tr class="table-primary">
+                            <td><strong>TOTAL</strong></td>
+                            <td class="text-end"><strong>PKR {{ "{:,.2f}".format(monthly_data|sum(attribute='expenses')) }}</strong></td>
+                            <td class="text-end"><strong>PKR {{ "{:,.2f}".format(monthly_data|sum(attribute='salaries')) }}</strong></td>
+                            <td class="text-end"><strong>PKR {{ "{:,.2f}".format(monthly_data|sum(attribute='total')) }}</strong></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Row with two columns -->
+<div class="row">
+    <!-- Project Status Distribution -->
+    <div class="col-md-6 mb-4">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0"><i class="fas fa-project-diagram"></i> Project Status Distribution</h5>
+            </div>
+            <div class="card-body">
+                <div class="chart-container" style="height: 300px;">
+                    <canvas id="projectStatusChart"></canvas>
+                </div>
+                <div class="table-responsive mt-3">
+                    <table class="table table-sm">
+                        <thead>
+                            <tr>
+                                <th>Status</th>
+                                <th class="text-center">Count</th>
+                                <th class="text-end">Budget</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for status, count, budget in project_stats %}
+                            <tr>
+                                <td>
+                                    {% if status == 'Planning' %}
+                                        <span class="badge bg-info">{{ status }}</span>
+                                    {% elif status == 'In Progress' %}
+                                        <span class="badge bg-primary">{{ status }}</span>
+                                    {% elif status == 'On Hold' %}
+                                        <span class="badge bg-warning">{{ status }}</span>
+                                    {% elif status == 'Completed' %}
+                                        <span class="badge bg-success">{{ status }}</span>
+                                    {% else %}
+                                        <span class="badge bg-secondary">{{ status }}</span>
+                                    {% endif %}
+                                </td>
+                                <td class="text-center">{{ count }}</td>
+                                <td class="text-end">PKR {{ "{:,.2f}".format(budget or 0) }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Expense by Category -->
+    <div class="col-md-6 mb-4">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0"><i class="fas fa-tags"></i> Expenses by Category</h5>
+            </div>
+            <div class="card-body">
+                <div class="chart-container" style="height: 300px;">
+                    <canvas id="expenseCategoryChart"></canvas>
+                </div>
+                <div class="table-responsive mt-3">
+                    <table class="table table-sm">
+                        <thead>
+                            <tr>
+                                <th>Category</th>
+                                <th class="text-end">Amount</th>
+                                <th class="text-end">Percentage</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% set total_cat_expenses = expense_by_category|sum(attribute='1') or 1 %}
+                            {% for category, amount in expense_by_category %}
+                            <tr>
+                                <td>{{ category or 'Uncategorized' }}</td>
+                                <td class="text-end">PKR {{ "{:,.2f}".format(amount) }}</td>
+                                <td class="text-end">{{ "{:.1f}".format((amount / total_cat_expenses) * 100) }}%</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Additional Reports Section -->
+<div class="card mb-4">
+    <div class="card-header">
+        <h5 class="mb-0"><i class="fas fa-file-alt"></i> Quick Reports</h5>
+    </div>
+    <div class="card-body">
+        <div class="row">
+            <div class="col-md-3 mb-3">
+                <a href="{{ url_for('projects') }}" class="text-decoration-none">
+                    <div class="card text-center h-100">
+                        <div class="card-body">
+                            <i class="fas fa-project-diagram fa-3x text-primary mb-3"></i>
+                            <h6>Project Report</h6>
+                            <p class="text-muted small">View all project details</p>
+                        </div>
+                    </div>
+                </a>
+            </div>
+            <div class="col-md-3 mb-3">
+                <a href="{{ url_for('expenses') }}" class="text-decoration-none">
+                    <div class="card text-center h-100">
+                        <div class="card-body">
+                            <i class="fas fa-receipt fa-3x text-danger mb-3"></i>
+                            <h6>Expense Report</h6>
+                            <p class="text-muted small">Detailed expense breakdown</p>
+                        </div>
+                    </div>
+                </a>
+            </div>
+            <div class="col-md-3 mb-3">
+                <a href="{{ url_for('salaries') }}" class="text-decoration-none">
+                    <div class="card text-center h-100">
+                        <div class="card-body">
+                            <i class="fas fa-money-bill-wave fa-3x text-success mb-3"></i>
+                            <h6>Salary Report</h6>
+                            <p class="text-muted small">Employee salary details</p>
+                        </div>
+                    </div>
+                </a>
+            </div>
+            <div class="col-md-3 mb-3">
+                <a href="{{ url_for('employees') }}" class="text-decoration-none">
+                    <div class="card text-center h-100">
+                        <div class="card-body">
+                            <i class="fas fa-users fa-3x text-info mb-3"></i>
+                            <h6>Employee Report</h6>
+                            <p class="text-muted small">Workforce overview</p>
+                        </div>
+                    </div>
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<script>
+    // Monthly Chart
+    const monthlyCtx = document.getElementById('monthlyChart').getContext('2d');
+    let monthlyChart;
+    
+    const monthlyData = {
+        labels: [{% for data in monthly_data %}'{{ data.month }}'{% if not loop.last %},{% endif %}{% endfor %}],
+        datasets: [
+            {
+                label: 'Expenses',
+                data: [{% for data in monthly_data %}{{ data.expenses }}{% if not loop.last %},{% endif %}{% endfor %}],
+                backgroundColor: 'rgba(231, 76, 60, 0.7)',
+                borderColor: 'rgba(231, 76, 60, 1)',
+                borderWidth: 2
+            },
+            {
+                label: 'Salaries',
+                data: [{% for data in monthly_data %}{{ data.salaries }}{% if not loop.last %},{% endif %}{% endfor %}],
+                backgroundColor: 'rgba(52, 152, 219, 0.7)',
+                borderColor: 'rgba(52, 152, 219, 1)',
+                borderWidth: 2
+            }
+        ]
+    };
+    
+    function createMonthlyChart(type) {
+        if (monthlyChart) {
+            monthlyChart.destroy();
+        }
+        
+        monthlyChart = new Chart(monthlyCtx, {
+            type: type,
+            data: monthlyData,
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        display: true,
+                        position: 'top'
+                    },
+                    title: {
+                        display: true,
+                        text: 'Monthly Financial Breakdown'
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                return context.dataset.label + ': PKR ' + context.parsed.y.toFixed(2).replace(/\d(?=(\d{3})+\.)/g, 'PKR &,');
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: {
+                            callback: function(value) {
+                                return 'PKR ' + value.toFixed(0).replace(/\d(?=(\d{3})+PKR )/g, 'PKR &,');
+                            }
+                        }
+                    }
+                }
+            }
+        });
+    }
+    
+    // Initial chart
+    createMonthlyChart('bar');
+    
+    // Project Status Chart
+    const projectStatusCtx = document.getElementById('projectStatusChart').getContext('2d');
+    new Chart(projectStatusCtx, {
+        type: 'doughnut',
+        data: {
+            labels: [{% for status, count, budget in project_stats %}'{{ status }}'{% if not loop.last %},{% endif %}{% endfor %}],
+            datasets: [{
+                data: [{% for status, count, budget in project_stats %}{{ count }}{% if not loop.last %},{% endif %}{% endfor %}],
+                backgroundColor: [
+                    'rgba(52, 152, 219, 0.8)',
+                    'rgba(46, 204, 113, 0.8)',
+                    'rgba(241, 196, 15, 0.8)',
+                    'rgba(231, 76, 60, 0.8)',
+                    'rgba(155, 89, 182, 0.8)'
+                ],
+                borderColor: [
+                    'rgba(52, 152, 219, 1)',
+                    'rgba(46, 204, 113, 1)',
+                    'rgba(241, 196, 15, 1)',
+                    'rgba(231, 76, 60, 1)',
+                    'rgba(155, 89, 182, 1)'
+                ],
+                borderWidth: 2
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    position: 'bottom'
+                },
+                title: {
+                    display: false
+                }
+            }
+        }
+    });
+    
+    // Expense Category Chart
+    const expenseCategoryCtx = document.getElementById('expenseCategoryChart').getContext('2d');
+    new Chart(expenseCategoryCtx, {
+        type: 'pie',
+        data: {
+            labels: [{% for category, amount in expense_by_category %}'{{ category or "Uncategorized" }}'{% if not loop.last %},{% endif %}{% endfor %}],
+            datasets: [{
+                data: [{% for category, amount in expense_by_category %}{{ amount }}{% if not loop.last %},{% endif %}{% endfor %}],
+                backgroundColor: [
+                    'rgba(231, 76, 60, 0.8)',
+                    'rgba(52, 152, 219, 0.8)',
+                    'rgba(46, 204, 113, 0.8)',
+                    'rgba(241, 196, 15, 0.8)',
+                    'rgba(155, 89, 182, 0.8)',
+                    'rgba(52, 73, 94, 0.8)',
+                    'rgba(26, 188, 156, 0.8)',
+                    'rgba(230, 126, 34, 0.8)'
+                ],
+                borderWidth: 2
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    position: 'bottom'
+                },
+                tooltip: {
+                    callbacks: {
+                        label: function(context) {
+                            const label = context.label || '';
+                            const value = context.parsed || 0;
+                            const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                            const percentage = ((value / total) * 100).toFixed(1);
+                            return label + ': PKR ' + value.toFixed(2).replace(/\d(?=(\d{3})+\.)/g, 'PKR &,') + ' (' + percentage + '%)';
+                        }
+                    }
+                }
+            }
+        }
+    });
+    
+    // Chart view switching
+    function showChart(type) {
+        const chartView = document.getElementById('chartView');
+        const tableView = document.getElementById('tableView');
+        
+        if (type === 'table') {
+            chartView.style.display = 'none';
+            tableView.style.display = 'block';
+        } else {
+            chartView.style.display = 'block';
+            tableView.style.display = 'none';
+            createMonthlyChart(type);
+        }
+    }
+    
+    // Export functions
+    function exportToExcel() {
+        alert('Excel export functionality can be implemented using libraries like xlsx or by generating CSV files.');
+        // Implementation would require additional backend route
+    }
+    
+    function exportToPDF() {
+        alert('PDF export functionality can be implemented using libraries like jsPDF or by generating PDFs on the backend.');
+        // Implementation would require additional backend route or client-side library
+    }
+</script>
+{% endblock %}

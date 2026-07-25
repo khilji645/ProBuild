@@ -1,0 +1,112 @@
+{% extends "public_base.html" %}
+{% block title %}ProBuild Engineering | Construction & Project Management{% endblock %}
+{% block content %}
+
+<section class="hero text-center">
+    <div class="container">
+        <h1 class="display-4 fw-bold mb-3">{{ get_content('home_hero_title', 'Building Tomorrow, Today') }}</h1>
+        <p class="lead mb-4">{{ get_content('home_hero_subtitle', 'ProBuild Engineering delivers reliable, on-time construction and infrastructure projects for clients who expect precision.') }}</p>
+        <a href="{{ url_for('portfolio') }}" class="btn btn-primary btn-lg me-2"><i class="fas fa-building"></i> View Our Work</a>
+        <a href="{{ url_for('contact') }}" class="btn btn-outline-light btn-lg"><i class="fas fa-paper-plane"></i> Get a Quote</a>
+    </div>
+</section>
+
+<section class="section bg-light">
+    <div class="container text-center">
+        <div class="row">
+            <div class="col-md-4 stat-box mb-4">
+                <h2>{{ years_experience }}+</h2>
+                <p class="text-muted">Years of Experience</p>
+            </div>
+            <div class="col-md-4 stat-box mb-4">
+                <h2>{{ completed_count }}</h2>
+                <p class="text-muted">Projects Completed</p>
+            </div>
+            <div class="col-md-4 stat-box mb-4">
+                <h2>{{ active_count }}</h2>
+                <p class="text-muted">Ongoing Projects</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="section">
+    <div class="container">
+        <h2 class="section-title text-center">What We Do</h2>
+        <p class="section-subtitle text-center">End-to-end construction and engineering services for commercial and residential clients.</p>
+        <div class="row g-4">
+            {% if home_services %}
+                {% for svc in home_services %}
+                <div class="col-md-4">
+                    <div class="card-feature text-center">
+                        <i class="{{ svc.icon }}"></i>
+                        <h5>{{ svc.title }}</h5>
+                        <p class="text-muted small mb-0">{{ svc.description }}</p>
+                    </div>
+                </div>
+                {% endfor %}
+            {% else %}
+            <div class="col-md-4">
+                <div class="card-feature text-center">
+                    <i class="fas fa-drafting-compass"></i>
+                    <h5>Design & Planning</h5>
+                    <p class="text-muted small mb-0">Feasibility studies, architectural planning, and engineering design.</p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card-feature text-center">
+                    <i class="fas fa-hard-hat"></i>
+                    <h5>Construction</h5>
+                    <p class="text-muted small mb-0">Full-scale construction management from groundbreaking to handover.</p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card-feature text-center">
+                    <i class="fas fa-tools"></i>
+                    <h5>Maintenance</h5>
+                    <p class="text-muted small mb-0">Ongoing facility maintenance and equipment servicing.</p>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+        <div class="text-center mt-4">
+            <a href="{{ url_for('services') }}" class="btn btn-outline-primary">See All Services</a>
+        </div>
+    </div>
+</section>
+
+{% if featured_projects %}
+<section class="section bg-light">
+    <div class="container">
+        <h2 class="section-title text-center">Featured Projects</h2>
+        <p class="section-subtitle text-center">A glimpse at some of our recent work.</p>
+        <div class="row g-4">
+            {% for project in featured_projects %}
+            <div class="col-md-4">
+                <div class="project-card">
+                    <img src="{{ project.cover_image or 'https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&w=800&q=60' }}" alt="{{ project.name }}">
+                    <div class="p-3">
+                        <span class="badge bg-info mb-2">{{ project.status }}</span>
+                        <h5>{{ project.name }}</h5>
+                        <p class="text-muted small">{{ project.location or '' }}</p>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        <div class="text-center mt-4">
+            <a href="{{ url_for('portfolio') }}" class="btn btn-primary">View Full Portfolio</a>
+        </div>
+    </div>
+</section>
+{% endif %}
+
+<section class="section text-center">
+    <div class="container">
+        <h2 class="section-title">{{ get_content('home_cta_title', "Ready to start your project?") }}</h2>
+        <p class="section-subtitle">{{ get_content('home_cta_subtitle', "Tell us what you're building — we'll take it from there.") }}</p>
+        <a href="{{ url_for('contact') }}" class="btn btn-primary btn-lg"><i class="fas fa-envelope"></i> Contact Us</a>
+    </div>
+</section>
+
+{% endblock %}

@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% block title %}Tasks{% endblock %}
+{% block content %}
+<div class="page-header"><h2><i class="fas fa-tasks"></i> Tasks</h2></div>
+<div class="card"><div class="card-body">
+{% if tasks %}
+<table class="table table-hover">
+<thead><tr><th>Task</th><th>Project</th><th>Assigned To</th><th>Status</th><th>Priority</th><th>Due Date</th><th>Actions</th></tr></thead>
+<tbody>
+{% for task in tasks %}
+<tr>
+<td>{{ task['title'] }}</td>
+<td>{{ task.project.name if task.project else 'N/A' }}</td>
+<td>{{ task['assigned_to'] or 'Unassigned' }}</td>
+<td><span class="badge bg-info">{{ task['status'] }}</span></td>
+<td><span class="badge bg-warning">{{ task['priority'] }}</span></td>
+<td>{{ task['due_date'] or 'N/A' }}</td>
+<td><button class="btn btn-sm btn-success" onclick="updateTask({{ task['id'] }}, 'Completed')">Complete</button></td>
+</tr>
+{% endfor %}
+</tbody>
+</table>
+{% else %}<p class="text-center py-4">No tasks found.</p>{% endif %}
+</div></div>
+{% endblock %}

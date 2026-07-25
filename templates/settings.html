@@ -1,0 +1,81 @@
+{% extends "base.html" %}
+{% block title %}Settings{% endblock %}
+{% block content %}
+<div class="page-header">
+    <h2><i class="fas fa-cog"></i> Settings</h2>
+    <p class="text-muted">Application settings and preferences</p>
+</div>
+
+<div class="row">
+    <div class="col-md-12">
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="mb-0">General Settings</h5>
+            </div>
+            <div class="card-body">
+                <div class="alert alert-info">
+                    <i class="fas fa-info-circle"></i> Settings page is under development. Advanced configuration options will be available soon.
+                </div>
+                
+                <h6 class="mb-3">Current Configuration</h6>
+                
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label class="form-label"><strong>Application Version</strong></label>
+                            <p>ProBuild Engineering v2.0 Enhanced</p>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label class="form-label"><strong>Database</strong></label>
+                            <p>SQLite (probuild.db)</p>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label class="form-label"><strong>Your Role</strong></label>
+                            <p><span class="badge bg-primary">{{ current_user.role|title }}</span></p>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label class="form-label"><strong>Date Format</strong></label>
+                            <p>YYYY-MM-DD (ISO Standard)</p>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label class="form-label"><strong>Currency</strong></label>
+                            <p>PKR  (USD)</p>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label class="form-label"><strong>Time Zone</strong></label>
+                            <p>UTC</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        {% if current_user.role == 'admin' %}
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">Admin Tools</h5>
+            </div>
+            <div class="card-body">
+                <p>Quick access to administrative functions:</p>
+                
+                <div class="d-grid gap-2">
+                    <a href="{{ url_for('users') }}" class="btn btn-outline-primary">
+                        <i class="fas fa-users-cog"></i> Manage Users
+                    </a>
+                    <a href="{{ url_for('reports') }}" class="btn btn-outline-success">
+                        <i class="fas fa-chart-bar"></i> View Reports
+                    </a>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

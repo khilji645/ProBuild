@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+{% block title %}Edit Equipment{% endblock %}
+{% block content %}
+<div class="page-header"><h2>Edit Equipment</h2></div>
+<div class="card"><div class="card-body">
+<form method="POST">
+<div class="row">
+<div class="col-md-6 mb-3"><label>Name *</label><input type="text" class="form-control" name="name" value="{{ equipment['name'] }}" required></div>
+<div class="col-md-6 mb-3"><label>Equipment ID</label><input type="text" class="form-control" name="equipment_id" value="{{ equipment['equipment_id'] or '' }}"></div>
+</div>
+<div class="row">
+<div class="col-md-4 mb-3"><label>Category</label><input type="text" class="form-control" name="category" value="{{ equipment['category'] or '' }}"></div>
+<div class="col-md-4 mb-3"><label>Status</label><select class="form-select" name="status">
+<option value="Available" {% if equipment['status']=='Available' %}selected{% endif %}>Available</option>
+<option value="In Use" {% if equipment['status']=='In Use' %}selected{% endif %}>In Use</option>
+<option value="Maintenance" {% if equipment['status']=='Maintenance' %}selected{% endif %}>Maintenance</option>
+<option value="Damaged" {% if equipment['status']=='Damaged' %}selected{% endif %}>Damaged</option>
+</select></div>
+<div class="col-md-4 mb-3"><label>Location</label><input type="text" class="form-control" name="location" value="{{ equipment['location'] or '' }}"></div>
+</div>
+<div class="row">
+<div class="col-md-4 mb-3"><label>Purchase Date</label><input type="date" class="form-control" name="purchase_date" value="{{ equipment['purchase_date'] or '' }}"></div>
+<div class="col-md-4 mb-3"><label>Purchase Cost</label><input type="number" class="form-control" name="purchase_cost" step="0.01" value="{{ equipment['purchase_cost'] or '' }}"></div>
+<div class="col-md-4 mb-3"><label>Current Value</label><input type="number" class="form-control" name="current_value" step="0.01" value="{{ equipment['current_value'] or '' }}"></div>
+</div>
+<div class="mb-3"><label>Notes</label><textarea class="form-control" name="notes" rows="2">{{ equipment['notes'] or '' }}</textarea></div>
+<button type="submit" class="btn btn-primary">Update Equipment</button>
+<a href="{{ url_for('equipment') }}" class="btn btn-secondary">Cancel</a>
+</form>
+</div></div>
+{% endblock %}

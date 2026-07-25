@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+{% block title %}Add Client - ProBuild{% endblock %}
+{% block content %}
+<div class="page-header">
+    <h2><i class="fas fa-user-plus"></i> Add New Client</h2>
+</div>
+<div class="card">
+    <div class="card-body">
+        <form method="POST">
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label class="form-label">Name *</label>
+                    <input type="text" class="form-control" name="name" required>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label class="form-label">Company</label>
+                    <input type="text" class="form-control" name="company">
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label class="form-label">Email</label>
+                    <input type="email" class="form-control" name="email">
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label class="form-label">Phone</label>
+                    <input type="text" class="form-control" name="phone">
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-12 mb-3">
+                    <label class="form-label">Address</label>
+                    <textarea class="form-control" name="address" rows="2"></textarea>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label class="form-label">City</label>
+                    <input type="text" class="form-control" name="city">
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label class="form-label">Country</label>
+                    <input type="text" class="form-control" name="country">
+                </div>
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Notes</label>
+                <textarea class="form-control" name="notes" rows="3"></textarea>
+            </div>
+            <button type="submit" class="btn btn-primary"><i class="fas fa-save"></i> Save Client</button>
+            <a href="{{ url_for('clients') }}" class="btn btn-secondary">Cancel</a>
+        </form>
+    </div>
+</div>
+{% endblock %}

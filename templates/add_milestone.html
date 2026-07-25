@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% block title %}Add Milestone{% endblock %}
+{% block content %}
+<div class="page-header"><h2>Add Milestone</h2></div>
+<div class="card"><div class="card-body">
+<form method="POST">
+<div class="mb-3"><label>Project *</label>
+<select class="form-select" name="project_id" required>
+<option value="">Select Project</option>
+{% for proj in projects %}<option value="{{ proj.id }}" {% if selected_project_id and proj.id|string == selected_project_id|string %}selected{% endif %}>{{ proj.name }}</option>{% endfor %}
+</select>
+</div>
+<div class="mb-3"><label>Title *</label><input type="text" class="form-control" name="title" required></div>
+<div class="mb-3"><label>Description</label><textarea class="form-control" name="description" rows="3"></textarea></div>
+<div class="row">
+<div class="col-md-6 mb-3"><label>Target Date</label><input type="date" class="form-control" name="target_date"></div>
+<div class="col-md-6 mb-3"><label>Status</label><select class="form-select" name="status">
+<option value="Pending">Pending</option><option value="Achieved">Achieved</option><option value="Delayed">Delayed</option>
+</select></div>
+</div>
+<button type="submit" class="btn btn-primary">Save Milestone</button>
+<a href="{{ url_for('project_detail', id=selected_project_id) if selected_project_id else url_for('dashboard') }}" class="btn btn-secondary">Cancel</a>
+</form>
+</div></div>
+{% endblock %}

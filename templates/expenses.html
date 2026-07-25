@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+{% block title %}Expenses{% endblock %}
+{% block content %}
+<div class="page-header d-flex justify-content-between">
+<div><h2><i class="fas fa-receipt"></i> Expenses</h2></div>
+{% if current_user.role != 'viewer' %}
+<a href="{{ url_for('add_expense') }}" class="btn btn-primary">Add Expense</a>
+{% endif %}
+</div>
+<div class="card"><div class="card-body">
+{% if expenses %}
+<table class="table table-hover">
+<thead><tr><th>Date</th><th>Category</th><th>Description</th><th>Project</th><th>Amount</th><th>Vendor</th><th>Status</th>{% if current_user.role != 'viewer' %}<th>Actions</th>{% endif %}</tr></thead>
+<tbody>
+{% for expense in expenses %}
+<tr>
+<td>{{ expense['date'] }}</td>
+<td>{{ expense['category'] }}</td>
+<td>{{ expense['description'] }}</td>
+<td>{{ expense['project_name'] or 'General' }}</td>
+<td>PKR {{ "%.2f"|format(expense['amount']) }}</td>
+<td>{{ expense['vendor'] or 'N/A' }}</td>
+<td><span class="badge bg-{{ 'success' if expense['status']=='Paid' else 'warning' }}">{{ expense['status'] }}</span></td>
+{% if current_user.role != 'viewer' %}
+<td>
+<a href="{{ url_for('edit_expense', id=expense['id']) }}" class="btn btn-sm btn-warning"><i class="fas fa-edit"></i></a>
+{% if current_user.role in ['admin', 'manager'] %}
+<a href="{{ url_for('delete_expense', id=expense['id']) }}" class="btn btn-sm btn-danger" onclick="return confirm('Delete?')"><i class="fas fa-trash"></i></a>
+{% endif %}
+</td>
+{% endif %}
+</tr>
+{% endfor %}
+</tbody>
+</table>
+{% else %}<p class="text-center py-4">No expenses found.</p>{% endif %}
+</div></div>
+{% endblock %}
